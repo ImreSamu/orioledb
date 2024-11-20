@@ -6,6 +6,8 @@ name: dockerTEST
 # Test Phases:
 # -----------
 # 1. Docker image building with customizable build arguments
+#    - old calling style with ALPINE_VERSION and UBUNTU_VERSION
+#    - new calling style:  BASE_IMAGE, BASE_VERSION ( debian )
 # 2. Official Docker Postgres library compatibility testing
 # 3. OrioleDB-specific test suite execution
 #
@@ -61,7 +63,9 @@ jobs:
       - name: Checkout source
         uses: actions/checkout@v4
 
-      - name: docker build orioletest:${{ matrix.postgres }}-${{ matrix.os.compiler }}-${{ matrix.os.distr }}-${{ matrix.os.distr-version }}
+      # old calling style with ALPINE_VERSION and UBUNTU_VERSION
+      - name: oldstyle docker build orioletest:${{ matrix.postgres }}-${{ matrix.os.compiler }}-${{ matrix.os.distr }}-${{ matrix.os.distr-version }}
+        if: matrix.os.distr <> 'debian'
         uses: docker/build-push-action@v6
         # https://github.com/docker/build-push-action
         with:
@@ -72,21 +76,34 @@ jobs:
           pull: true
           tags: orioletest:${{ matrix.postgres }}-${{ matrix.os.compiler }}-${{ matrix.os.distr }}-${{ matrix.os.distr-version }}
           # for alpine+ubuntu: using the old calling style ( deprecated )
-          # for debian: using the new calling style
           build-args: |
             ALPINE_VERSION=${{ matrix.os.distr == 'alpine' && matrix.os.distr-version || '' }}
             UBUNTU_VERSION=${{ matrix.os.distr == 'ubuntu' && matrix.os.distr-version || '' }}
-            BASE_IMAGE=${{ (matrix.os.distr == 'debian') && matrix.os.distr }}
-            BASE_VERSION=${{ (matrix.os.distr == 'debian') && matrix.os.distr-version }}
             PG_MAJOR=${{ matrix.postgres }}
             BUILD_CC_COMPILER=${{ matrix.os.compiler }}
             DOCKER_PG_LLVM_DEPS=llvm-dev clang
             DEBUG_MODE=false
 
-      # in the future ALPINE_VERSION, UBUNTU_VERSION will be removed
-      # and only the BASE_IMAGE, BASE_VERSION could be set as:
-      #     BASE_IMAGE=${{  matrix.os.distr || '' }}
-      #     BASE_VERSION=${{ matrix.os.distr-version || '' }}
+      # new calling style:  BASE_IMAGE, BASE_VERSION
+      - name: newstyle docker build orioletest:${{ matrix.postgres }}-${{ matrix.os.compiler }}-${{ matrix.os.distr }}-${{ matrix.os.distr-version }}
+        if: matrix.os.distr == 'debian'
+        uses: docker/build-push-action@v6
+        # https://github.com/docker/build-push-action
+        with:
+          context: .
+          file: ${{ (matrix.os.distr == 'ubuntu' || matrix.os.distr == 'debian') && 'Dockerfile.ubuntu' || 'Dockerfile' }}
+          platforms: linux/amd64
+          push: false
+          pull: true
+          tags: orioletest:${{ matrix.postgres }}-${{ matrix.os.compiler }}-${{ matrix.os.distr }}-${{ matrix.os.distr-version }}
+          # for debian: testing the new calling style
+          build-args: |
+            BASE_IMAGE=${{ matrix.os.distr }}
+            BASE_VERSION=${{ matrix.os.distr-version }}
+            PG_MAJOR=${{ matrix.postgres }}
+            BUILD_CC_COMPILER=${{ matrix.os.compiler }}
+            DOCKER_PG_LLVM_DEPS=llvm-dev clang
+            DEBUG_MODE=false
 
       # docker image testing with https://github.com/docker-library/official-images.git
       # to check if the image is compatible with the official-images test suite
