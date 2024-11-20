@@ -14,9 +14,6 @@ on:
   push:
   pull_request:
 
-env:
-  UNSTABLE_VERSIONS: '["edge", "devel", "testing", "unstable", "experimental"]'
-
 defaults:
   run:
     shell: bash
@@ -58,7 +55,7 @@ jobs:
 
     name: docker ${{ matrix.postgres }}-${{ matrix.os.compiler }}-${{ matrix.os.distr }}-${{ matrix.os.distr-version }}
     runs-on: ubuntu-latest
-    continue-on-error: ${{ contains(env.UNSTABLE_VERSIONS, matrix.os.distr-version) }}
+    continue-on-error: ${{ contains(fromJSON('["edge", "devel", "testing", "unstable", "experimental"]'), matrix.os.distr-version) }}
 
     steps:
       - name: Checkout source
