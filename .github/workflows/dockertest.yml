@@ -76,8 +76,8 @@ jobs:
           build-args: |
             ALPINE_VERSION=${{ matrix.os.distr == 'alpine' && matrix.os.distr-version || '' }}
             UBUNTU_VERSION=${{ matrix.os.distr == 'ubuntu' && matrix.os.distr-version || '' }}
-            BASE_IMAGE=${{ (matrix.os.distr == 'debian') && matrix.os.distr || '' }}
-            BASE_VERSION=${{ (matrix.os.distr == 'debian') && matrix.os.distr-version || '' }}
+            BASE_IMAGE=${{ (matrix.os.distr == 'debian') && matrix.os.distr }}
+            BASE_VERSION=${{ (matrix.os.distr == 'debian') && matrix.os.distr-version }}
             PG_MAJOR=${{ matrix.postgres }}
             BUILD_CC_COMPILER=${{ matrix.os.compiler }}
             DOCKER_PG_LLVM_DEPS=llvm-dev clang
