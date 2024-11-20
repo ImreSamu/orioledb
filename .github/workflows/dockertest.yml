@@ -65,7 +65,7 @@ jobs:
 
       # old calling style with ALPINE_VERSION and UBUNTU_VERSION
       - name: oldstyle docker build orioletest:${{ matrix.postgres }}-${{ matrix.os.compiler }}-${{ matrix.os.distr }}-${{ matrix.os.distr-version }}
-        if: matrix.os.distr <> 'debian'
+        if: matrix.os.distr != 'debian'
         uses: docker/build-push-action@v6
         # https://github.com/docker/build-push-action
         with:
