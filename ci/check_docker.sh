@@ -109,7 +109,7 @@ time su postgres -c "\
     cd /temp_orioledb && \
     source /tmp/env/bin/activate && \
     make \
-        NO_INSTALL=1 \
+        SKIP_INSTALL=1 \
         USE_PGXS=1 \
         ${MAKE_TARGETS} \
         -j$(nproc) \

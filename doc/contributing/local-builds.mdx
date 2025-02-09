@@ -99,6 +99,18 @@ pg_ctl -D $HOME/pgdata/ start -l $HOME/log
 psql -c "CREATE EXTENSION IF NOT EXISTS orioledb; SELECT orioledb_commit_hash();" -d postgres
 ```
 
+#### Testing existing Orioledb system without install
+
+To run tests against an already-installed orioledb (e.g., via apt or yum),
+simply bypass the installation step by setting `SKIP_INSTALL=1`.
+This is especially useful in containerized environments like Docker
+or when testing production setups.
+
+```bash
+cd orioledb
+make USE_PGXS=1 SKIP_INSTALL=1 regresscheck
+```
+
 # MacOS
 
 ### Disable System Integrity Protection

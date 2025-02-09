@@ -209,9 +209,11 @@ ifeq ($(shell expr $(MAJORVERSION) \>= 15), 1)
   ISOLATIONCHECKS += isol_merge
 endif
 
-# Control installation dependency and wrapper based on NO_INSTALL
-# in the docker environment, we don't need to install the extension
-ifdef NO_INSTALL
+# Control installation dependency and temporary install wrapper based on SKIP_INSTALL.
+# In environments like Docker, we skip the installation of the extension.
+# This mechanism is also useful for verifying orioledb extensions installed through
+# package managers (apt, yum, etc.) or for running regression tests against production installations.
+ifdef SKIP_INSTALL
 INSTALL_DEP =
 TEMP_INSTALL_WRAPPER =
 else
