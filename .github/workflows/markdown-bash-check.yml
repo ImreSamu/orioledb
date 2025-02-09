@@ -1,0 +1,29 @@
+name: Markdown Bash Code Check
+
+on:
+  push:
+    tags:
+      - '*'
+  release:
+    types: [published]
+  schedule:
+    # Run every Monday at 6:00 AM UTC
+    - cron: '0 6 * * 1'
+  pull_request:
+    paths:
+      - 'docker/**'
+      - 'doc/contributing/docker-builds.mdx'
+      - '.github/workflows/markdown-bash-check.yml'
+
+jobs:
+  check-markdown-bash:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out the repo
+        uses: actions/checkout@v4
+
+      - name: 'docker-builds.mdx - Extract and show code'
+        run: ./ci/markdown-bash-checker.sh --dry-run ./doc/contributing/docker-builds.mdx
+
+      - name: 'docker-builds.mdx - Run bash code blocks'
+        run: ./ci/markdown-bash-checker.sh --run ./doc/contributing/docker-builds.mdx
