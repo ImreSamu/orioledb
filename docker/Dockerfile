@@ -78,8 +78,7 @@ RUN set -eux; \
 	# https://wiki.alpinelinux.org/wiki/Release_Notes_for_Alpine_3.16.0#ICU_data_split
 	# https://github.com/docker-library/postgres/issues/327#issuecomment-1201582069
 	case "$ALPINE_VERSION" in 3.13 | 3.14 | 3.15 )  EXTRA_ICU_PACKAGES='' ;; \
-		3.16 | 3.17 | 3.18 | 3.19 | 3.20 | 3.21 | 3.22* )  EXTRA_ICU_PACKAGES=icu-data-full ;; \
-		*) echo "Unsupported Alpine version: $ALPINE_VERSION" && exit 1 ;; \
+		                                       * )  EXTRA_ICU_PACKAGES=icu-data-full ;; \
 	esac ; \
 	\
 	echo "PG_MAJOR=$PG_MAJOR" ; \

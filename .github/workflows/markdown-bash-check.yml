@@ -1,4 +1,4 @@
-name: Markdown Bash Code Check
+name: markdown-bash-check
 
 on:
   push:
