@@ -97,7 +97,7 @@ fi
 # Initialize the output file with the shebang and strict mode
 {
     echo "#!/usr/bin/env bash"
-    echo "set -euo pipefail"
+    echo "set -euxo pipefail"
 } > "$OUTPUT_FILE"
 
 BLOCK_COUNT=0

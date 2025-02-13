@@ -37,6 +37,6 @@ for base_alias in "${BASE_ALIASES[@]}"; do
 		imageTests["$alias"]='
 			orioledb-basics
 		'
-		echo "- Configured: testAlias[\"$alias\"]='postgres'  imageTests[\"$alias\"]='orioledb-basics'"
+		# echo "- Configured: testAlias[\"$alias\"]='postgres'  imageTests[\"$alias\"]='orioledb-basics'"
     done
 done
