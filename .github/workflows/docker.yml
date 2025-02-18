@@ -105,7 +105,7 @@ jobs:
       - name: "Run test_targets: ${{ matrix.test_targets }}"
         run: |
           docker run --rm \
-            --volume $(pwd):/github/workspace/orioledb \
+            --volume $(pwd):/local_workspace \
             orioledb-amd64:latest \
             bash -c 'bash +x /github/workspace/orioledb/ci/check_docker.sh --running all "${{ matrix.test_targets }}"'
 

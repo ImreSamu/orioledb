@@ -251,7 +251,7 @@ main() {
                         if [ "$TEST_TARGETS" != "no" ]; then
                             execute_command "touch ${logpath}/${docker_tag}.check.progress"
                             execute_command "docker run --rm --network=host \
-                                --volume $(pwd):/github/workspace/orioledb \
+                                --volume $(pwd):/local_workspace \
                                 \"orioletest:${docker_tag}\" \
                                 bash -c 'bash +x /github/workspace/orioledb/ci/check_docker.sh --running all \"${TEST_TARGETS}\"' \
                                 2>&1 | \

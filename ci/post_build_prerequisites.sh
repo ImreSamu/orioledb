@@ -2,20 +2,9 @@
 
 set -eu
 
-# Build type parameter: 'pgxs' for USE_PGXS=1, empty or anything else for regular build
-BUILD_TYPE="${1:-}"
+python3 -m venv $GITHUB_WORKSPACE/python3-venv
 
-# Set up environment variables
-if [ "$BUILD_TYPE" = "pgxs" ]; then
-    # For PGXS builds, use system PostgreSQL
-    echo "Using system PostgreSQL - setting up wal2json with USE_PGXS=1"
-else
-    # Create Python virtual environment
-    python3 -m venv $GITHUB_WORKSPACE/python3-venv
-
-    # For regular builds, use workspace PostgreSQL
-    export PATH="$GITHUB_WORKSPACE/pgsql/bin:$GITHUB_WORKSPACE/python3-venv/bin:$PATH"
-fi
+export PATH="$GITHUB_WORKSPACE/pgsql/bin:$GITHUB_WORKSPACE/python3-venv/bin:$PATH"
 
 # psycopg2 depends on existing postgres installation
 if [ $GITHUB_JOB = "run-benchmark" ]; then
@@ -34,12 +23,6 @@ if [ $GITHUB_JOB != "run-benchmark" ] && [ $GITHUB_JOB != "pgindent" ]; then
     tar -zxf wal2json_2_6
     rm wal2json_2_6
     cd wal2json-wal2json_2_6
-
-    if [ "$BUILD_TYPE" = "pgxs" ]; then
-        make USE_PGXS=1
-        make USE_PGXS=1 install
-    else
-        make
-        make install
-    fi
+    make
+    make install
 fi
