@@ -1379,11 +1379,58 @@ tts_orioledb_toast(TupleTableSlot *slot, OTableDescr *descr)
 		}
 		else
 		{
-			/* Compression failed, but we can not TOAST it */
+			/* Compression failed; allow a later fall-back to out-of-line TOAST. */
 			Assert(att->attstorage == TYPSTORAGE_MAIN);
 			oslot->to_toast[max_attn] = ORIOLEDB_TO_TOAST_COMPRESSION_TRIED;
 			to_toastn++;
 		}
+	}
+
+	/*
+	 * If the tuple is still oversized, progressively allow STORAGE MAIN
+	 * attributes to be toasted out-of-line, largest first.
+	 */
+	if (!can_be_stored_in_index(slot, descr))
+	{
+		while (!can_be_stored_in_index(slot, descr))
+		{
+			int			max = 0;
+			int			max_attn = -1;
+			int			var_size;
+
+			for (i = 0; i < descr->ntoastable; i++)
+			{
+				toast_attn = descr->toastable[i] - ctid_off;
+				if (slot->tts_isnull[toast_attn])
+					continue;
+
+				if (oslot->to_toast[toast_attn] == ORIOLEDB_TO_TOAST_ON)
+					continue;
+
+				att = TupleDescAttr(tupdesc, toast_attn);
+				if (att->attstorage != TYPSTORAGE_MAIN)
+					continue;
+
+				var_size = VARSIZE_ANY(slot->tts_values[toast_attn]);
+				if (var_size > max)
+				{
+					max = var_size;
+					max_attn = toast_attn;
+				}
+			}
+
+			if (max_attn == -1)
+				break;
+
+			oslot->to_toast[max_attn] = ORIOLEDB_TO_TOAST_ON;
+		}
+	}
+
+	for (i = 0; i < descr->ntoastable; i++)
+	{
+		toast_attn = descr->toastable[i] - ctid_off;
+		if (oslot->to_toast[toast_attn] == ORIOLEDB_TO_TOAST_COMPRESSION_TRIED)
+			oslot->to_toast[toast_attn] = ORIOLEDB_TO_TOAST_OFF;
 	}
 }
 
